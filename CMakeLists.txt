@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(ENV{PICO_SDK_PATH} "${CMAKE_SOURCE_DIR}/third_party/pico-sdk")
-set(ENV{PICO_SDK_PATH} "${CMAKE_SOURCE_DIR}/third_party/pico-extras")
+set(ENV{PICO_SDK_PATH} "${CMAKE_SOURCE_DIR}/thirdparty/pico-sdk")
+set(ENV{PICO_EXTRAS_PATH} "${CMAKE_SOURCE_DIR}/thirdparty/pico-extras")
 
 message(STATUS "*** dump start cmake variables ***")
 get_cmake_property(_variableNames VARIABLES)
@@ -13,7 +13,7 @@ endforeach()
 message(STATUS "*** dump end ***")
 
 # Pull in SDK (must be before project)
-include(./third_party/pico-sdk/external/pico_sdk_import.cmake)
+include(./thirdparty/pico-sdk/external/pico_sdk_import.cmake)
 
 # Pull in extras (must be before project)
 include(./thirdparty/pico-extras/external/pico_extras_import.cmake)

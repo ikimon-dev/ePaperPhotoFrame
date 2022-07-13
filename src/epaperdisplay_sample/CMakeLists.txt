@@ -7,11 +7,23 @@ project(${PROJECT_NAME} VERSION 1.0)
 
 
 add_executable(${PROJECT_NAME}
+src/epaperdisplay_sample/Config/DEV_Config.c
+src/epaperdisplay_sample/Config/DEV_Config.h
+src/epaperdisplay_sample/e-Paper/EPD_IT8951.c
+src/epaperdisplay_sample/e-Paper/EPD_IT8951.h
+src/epaperdisplay_sample/Fonts/font8.c
+src/epaperdisplay_sample/Fonts/font12.c
+src/epaperdisplay_sample/Fonts/font12CN.c
+src/epaperdisplay_sample/Fonts/font16.c
+src/epaperdisplay_sample/Fonts/font20.c
+src/epaperdisplay_sample/Fonts/font24.c
+src/epaperdisplay_sample/Fonts/font24CN.c
+src/epaperdisplay_sample/Fonts/fonts.h
+src/epaperdisplay_sample/GUI/GUI_BMPfile.c
+src/epaperdisplay_sample/GUI/GUI_BMPfile.h
+src/epaperdisplay_sample/GUI/GUI_Paint.c
+src/epaperdisplay_sample/GUI/GUI_Paint.h
 main.c
-DEV_Config.c
-DEV_Config.h
-EPD_2in9b_V3.c 
-EPD_2in9b_V3.h
 )
 
 # pull in common dependencies

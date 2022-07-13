@@ -1,7 +1,10 @@
 {
     "files.associations": {
         "*.pio": "pio",
-        "dev_config.h": "c"
+        "dev_config.h": "c",
+        "fcntl.h": "c",
+        "spi.h": "c",
+        "address_mapped.h": "c"
     }
 }
 // {
