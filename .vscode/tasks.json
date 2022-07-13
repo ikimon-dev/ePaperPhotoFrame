@@ -1,0 +1,76 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        { //https://qiita.com/RyodoTanaka/items/e9b15d579d17651650b7
+            "type": "shell",
+            "label": "udevd-deamon",
+            "command": "sudo /lib/systemd/systemd-udevd --daemon",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "udevadm-control",
+            "command": "sudo udevadm control --reload-rules",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "udevadm-triger",
+            "command": "sudo udevadm trigger",
+            "problemMatcher": []
+        },
+        {
+            // https://gist.github.com/davidtibbetts/9ae8131d9f7e87c62ac064302405c453
+            "type": "shell",
+            "label": "Start-OpenOCD",
+            "command": "openocd",
+            "args": [
+                "-f",
+                "interface/picoprobe.cfg",
+                "-f",
+                "target/rp2040.cfg",
+                "-s",
+                "tcl"
+            ],
+            // https://qiita.com/ShortArrow/items/0bacd3a4bcbcbac50e60
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "udevd-deamon",
+                "udevadm-control",
+                "udevadm-triger"
+            ],
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "^(Info |Warn |Error):(.*)$",
+                    "severity": 1,
+                    "message": 2
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "^Open On-Chip Debugger.*",
+                    "endsPattern": ".*watchpoints.*"
+                }
+            },
+            "presentation": {
+                "reveal": "always",
+                "clear": true
+            },
+            "isBackground": true
+        },
+        { //https://qiita.com/amay077/items/3e4c3d6102c70bf46463
+            "label": "TerminateDebug",
+            "type": "process",
+            "command": "echo ${input:terminate}"
+        }
+    ],
+    "inputs": [
+        { //https://komari.co.jp/blog/1780/
+            "id": "terminate",
+            "type": "command",
+            "command": "workbench.action.tasks.terminate",
+            "args": "Start-OpenOCD"
+        }
+    ]
+}
