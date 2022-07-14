@@ -37,7 +37,7 @@
 
 #include "GUI_BMPfile.h"
 #include "GUI_Paint.h"
-#include "../Config/Debug.h"
+// #include "../Config/Debug.h"
 
 #include <fcntl.h>
 #include <unistd.h>
@@ -267,7 +267,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 	ret = fread(&FileHead, sizeof(BMPFILEHEADER),1, fp);
 	if (ret != 1)
 	{
-		Debug("Read header error!\n");
+		// Debug("Read header error!\n");
 		fclose(fp);
 		return(-2);
 	}
@@ -275,46 +275,46 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 	//Detect if it is a bmp image, since BMP file type is "BM"(0x4D42)
 	if (FileHead.bType != 0x4D42)
 	{
-		Debug("It's not a BMP file\n");
+		// Debug("It's not a BMP file\n");
 		fclose(fp);
 		return(-3);
 	}
 	
-	Debug("*****************************************\n");
-	Debug("BMP_bSize:%d \n", FileHead.bSize);
- 	Debug("BMP_bOffset:%d \n", FileHead.bOffset);
+	// Debug("*****************************************\n");
+	// Debug("BMP_bSize:%d \n", FileHead.bSize);
+ 	// Debug("BMP_bOffset:%d \n", FileHead.bOffset);
 	
 	ret = fread((char *)&InfoHead, sizeof(BMPINFOHEADER),1, fp);
 	if (ret != 1)
 	{
-		Debug("Read infoheader error!\n");
+		// Debug("Read infoheader error!\n");
 		fclose(fp);
 		return(-4);
 	}
 	
-	Debug("BMP_biInfoSize:%d \n", InfoHead.biInfoSize);
- 	Debug("BMP_biWidth:%d \n", InfoHead.biWidth);
-	Debug("BMP_biHeight:%d \n", InfoHead.biHeight);
-	Debug("BMP_biPlanes:%d \n", InfoHead.biPlanes);
-	Debug("BMP_biBitCount:%d \n", InfoHead.biBitCount);
-	Debug("BMP_biCompression:%d \n", InfoHead.biCompression);
-	Debug("BMP_bimpImageSize:%d \n", InfoHead.bimpImageSize);
-	Debug("BMP_biXPelsPerMeter:%d \n", InfoHead.biXPelsPerMeter);
-	Debug("BMP_biYPelsPerMeter:%d \n", InfoHead.biYPelsPerMeter);
-	Debug("BMP_biClrUsed:%d \n", InfoHead.biClrUsed);
-	Debug("BMP_biClrImportant:%d \n", InfoHead.biClrImportant);
+	// Debug("BMP_biInfoSize:%d \n", InfoHead.biInfoSize);
+ 	// Debug("BMP_biWidth:%d \n", InfoHead.biWidth);
+	// Debug("BMP_biHeight:%d \n", InfoHead.biHeight);
+	// Debug("BMP_biPlanes:%d \n", InfoHead.biPlanes);
+	// Debug("BMP_biBitCount:%d \n", InfoHead.biBitCount);
+	// Debug("BMP_biCompression:%d \n", InfoHead.biCompression);
+	// Debug("BMP_bimpImageSize:%d \n", InfoHead.bimpImageSize);
+	// Debug("BMP_biXPelsPerMeter:%d \n", InfoHead.biXPelsPerMeter);
+	// Debug("BMP_biYPelsPerMeter:%d \n", InfoHead.biYPelsPerMeter);
+	// Debug("BMP_biClrUsed:%d \n", InfoHead.biClrUsed);
+	// Debug("BMP_biClrImportant:%d \n", InfoHead.biClrImportant);
 	
 	total_length = FileHead.bSize-FileHead.bOffset;
 	bytesPerLine=((InfoHead.biWidth*InfoHead.biBitCount+31)>>5)<<2;
 	imageSize=bytesPerLine*InfoHead.biHeight;
 	skip=(4-((InfoHead.biWidth*InfoHead.biBitCount)>>3))&3;
 	
-	Debug("bimpImageSize:%d\n", InfoHead.bimpImageSize);
-	Debug("total_length:%d\n", total_length);
-	Debug("bytesPerLine = %d\n", bytesPerLine);
-	Debug("imageSize = %d\n", imageSize);
-	Debug("skip = %d\n", skip);
-	Debug("*****************************************\n");
+	// Debug("bimpImageSize:%d\n", InfoHead.bimpImageSize);
+	// Debug("total_length:%d\n", total_length);
+	// Debug("bytesPerLine = %d\n", bytesPerLine);
+	// Debug("imageSize = %d\n", imageSize);
+	// Debug("skip = %d\n", skip);
+	// Debug("*****************************************\n");
 	
     bmp_width = InfoHead.biWidth;
     bmp_height = InfoHead.biHeight;
@@ -324,14 +324,14 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
     bmp_src_buf = (UBYTE*)calloc(1,total_length);
 	//bmp_src_buf = (UBYTE*)calloc(1,imageSize);
     if(bmp_src_buf == NULL){
-        Debug("Load > malloc bmp out of memory!\n");
+        // Debug("Load > malloc bmp out of memory!\n");
         return -1;
     }
 	//This is old code, but allocate imageSize byte memory is more reasonable
 	bmp_dst_buf = (UBYTE*)calloc(1,total_length);
 	//bmp_dst_buf = (UBYTE*)calloc(1,imageSize);
     if(bmp_dst_buf == NULL){
-        Debug("Load > malloc bmp out of memory!\n");
+        // Debug("Load > malloc bmp out of memory!\n");
         return -2;
     }
 
@@ -361,7 +361,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 			ret = fread(palette,1,4*2,fp);
 			if (ret != 8) 
 			{
-				Debug("Error: fread != 8\n");
+				// Debug("Error: fread != 8\n");
 				return -5;
 			}
 
@@ -370,7 +370,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 			bmp_dst_buf = (UBYTE*)calloc(1,InfoHead.biWidth * InfoHead.biHeight);
 			if(bmp_dst_buf == NULL)
 			{
-				Debug("Load > malloc bmp out of memory!\n");
+				// Debug("Load > malloc bmp out of memory!\n");
 				return -5;
 			}
 			
@@ -381,7 +381,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 			ret = fread(palette,1,4*16,fp);
 			if (ret != 64) 
 			{
-				Debug("Error: fread != 64\n");
+				// Debug("Error: fread != 64\n");
 				return -5;
 			}
 			//this is old code, will likely result in memory leak if use 4bp source bmp image
@@ -389,7 +389,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 			bmp_dst_buf = (UBYTE*)calloc(1,InfoHead.biWidth * InfoHead.biHeight);
 			if(bmp_dst_buf == NULL)
 			{
-				Debug("Load > malloc bmp out of memory!\n");
+				// Debug("Load > malloc bmp out of memory!\n");
 				return -5;
 			}
 			
@@ -402,7 +402,7 @@ UBYTE GUI_ReadBmp(const char *path, UWORD x, UWORD y)
 
 			if (ret != 1024) 
 			{
-				Debug("Error: fread != 1024\n");
+				// Debug("Error: fread != 1024\n");
 				return -5;
 			}
 		break;

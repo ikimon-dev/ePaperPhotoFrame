@@ -32,6 +32,7 @@
 #include "hardware/pio.h"
 #include "hardware/gpio.h"
 #include "hardware/spi.h"
+#include "pico/binary_info.h"
 
 #include "DEV_Config.h"
 #include <fcntl.h>
@@ -43,7 +44,7 @@ Info:
 ******************************************************************************/
 void DEV_Digital_Write(UWORD Pin, UBYTE Value)
 {
-	gpio_put(_pin, _value == 0 ? 0 : 1);
+	gpio_put(Pin, Value == 0 ? 0 : 1);
 }
 
 /******************************************************************************
@@ -53,7 +54,7 @@ Info:
 ******************************************************************************/
 UBYTE DEV_Digital_Read(UWORD Pin)
 {
-	return gpio_get(_pin);
+	return gpio_get(Pin);
 }
 
 /******************************************************************************
@@ -87,7 +88,7 @@ Info:
 ******************************************************************************/
 void DEV_Delay_ms(UDOUBLE xms)
 {
-	sleep_ms(xms)
+	sleep_ms(xms);
 }
 
 /******************************************************************************
@@ -105,13 +106,16 @@ void DEV_Delay_us(UDOUBLE xus)
  **/
 static void DEV_GPIO_Mode(UWORD Pin, UWORD Mode)
 {
-	if (Mode == 0 || Mode == BCM2835_GPIO_FSEL_INPT)
+
+	gpio_init(Pin);
+
+	if (Mode == 0 || Mode == GPIO_IN)
 	{
-		bcm2835_gpio_fsel(Pin, BCM2835_GPIO_FSEL_INPT);
+		gpio_set_dir(Pin, GPIO_IN);
 	}
 	else
 	{
-		bcm2835_gpio_fsel(Pin, BCM2835_GPIO_FSEL_OUTP);
+		gpio_set_dir(Pin, GPIO_OUT);
 	}
 }
 
@@ -120,11 +124,11 @@ static void DEV_GPIO_Mode(UWORD Pin, UWORD Mode)
  **/
 static void DEV_GPIO_Init(void)
 {
-	DEV_GPIO_Mode(EPD_RST_PIN, BCM2835_GPIO_FSEL_OUTP);
-	DEV_GPIO_Mode(EPD_CS_PIN, BCM2835_GPIO_FSEL_OUTP);
-	DEV_GPIO_Mode(EPD_BUSY_PIN, BCM2835_GPIO_FSEL_INPT);
+	DEV_GPIO_Mode(EPD_RST_PIN, GPIO_OUT);
+	DEV_GPIO_Mode(EPD_CS_PIN, GPIO_OUT);
+	DEV_GPIO_Mode(EPD_BUSY_PIN, GPIO_IN);
 
-	DEV_Digital_Write(EPD_CS_PIN, HIGH);
+	DEV_Digital_Write(EPD_CS_PIN, 1);
 }
 
 /******************************************************************************
@@ -134,30 +138,38 @@ Info:
 ******************************************************************************/
 UBYTE DEV_Module_Init(void)
 {
-	Debug("/***********************************/ \r\n");
+	// Debug("/***********************************/ \r\n");
 
-	if (!bcm2835_init())
-	{
-		Debug("bcm2835 init failed  !!! \r\n");
-		return 1;
-	}
-	else
-	{
-		Debug("bcm2835 init success !!! \r\n");
-	}
+	// if (!bcm2835_init())
+	// {
+	// 	Debug("bcm2835 init failed  !!! \r\n");
+	// 	return 1;
+	// }
+	// else
+	// {
+	// 	Debug("bcm2835 init success !!! \r\n");
+	// }
 
-	bcm2835_spi_begin();									 // Start spi interface, set spi pin for the reuse function
-	bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST); // High first transmission
-	bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);				 // spi mode 0
+	// This example will use SPI0 at 1.0MHz.
+	spi_init(SPI_PORT, 1000 * 1000);
+
+	gpio_set_function(PIN_CLK, GPIO_FUNC_SPI);
+	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+
+    bi_decl(bi_2pins_with_func(PIN_MOSI, PIN_CLK, GPIO_FUNC_SPI));
+
+	// bcm2835_spi_begin();									 // Start spi interface, set spi pin for the reuse function
+	// bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST); // High first transmission
+	// bcm2835_spi_setDataMode(BCM2835_SPI_MODE0);				 // spi mode 0
 	// bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_16);   //For RPi3/3B/3B+
-	bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32); // For RPi 4
+	// bcm2835_spi_setClockDivider(BCM2835_SPI_CLOCK_DIVIDER_32); // For RPi 4
 	/* SPI clock reference link：*/
 	/*http://www.airspayce.com/mikem/bcm2835/group__constants.html#gaf2e0ca069b8caef24602a02e8a00884e*/
 
 	// GPIO Config
 	DEV_GPIO_Init();
 
-	Debug("/***********************************/ \r\n");
+	// Debug("/***********************************/ \r\n");
 	return 0;
 }
 
@@ -168,9 +180,6 @@ Info:
 ******************************************************************************/
 void DEV_Module_Exit(void)
 {
-	DEV_Digital_Write(EPD_CS_PIN, LOW);
-	DEV_Digital_Write(EPD_RST_PIN, LOW);
-
-	bcm2835_spi_end();
-	bcm2835_close();
+	DEV_Digital_Write(EPD_CS_PIN, 0);
+	DEV_Digital_Write(EPD_RST_PIN, 0);
 }

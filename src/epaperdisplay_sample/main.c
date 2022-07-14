@@ -23,8 +23,6 @@ int main()
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
 
-    DEV_Digital_Write(LED_PIN);
-
     while (true)
     {
         DEV_Digital_Write(LED_PIN, 1);

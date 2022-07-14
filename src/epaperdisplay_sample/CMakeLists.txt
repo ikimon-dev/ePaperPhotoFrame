@@ -7,22 +7,22 @@ project(${PROJECT_NAME} VERSION 1.0)
 
 
 add_executable(${PROJECT_NAME}
-src/epaperdisplay_sample/Config/DEV_Config.c
-src/epaperdisplay_sample/Config/DEV_Config.h
-src/epaperdisplay_sample/e-Paper/EPD_IT8951.c
-src/epaperdisplay_sample/e-Paper/EPD_IT8951.h
-src/epaperdisplay_sample/Fonts/font8.c
-src/epaperdisplay_sample/Fonts/font12.c
-src/epaperdisplay_sample/Fonts/font12CN.c
-src/epaperdisplay_sample/Fonts/font16.c
-src/epaperdisplay_sample/Fonts/font20.c
-src/epaperdisplay_sample/Fonts/font24.c
-src/epaperdisplay_sample/Fonts/font24CN.c
-src/epaperdisplay_sample/Fonts/fonts.h
-src/epaperdisplay_sample/GUI/GUI_BMPfile.c
-src/epaperdisplay_sample/GUI/GUI_BMPfile.h
-src/epaperdisplay_sample/GUI/GUI_Paint.c
-src/epaperdisplay_sample/GUI/GUI_Paint.h
+Config/DEV_Config.c
+Config/DEV_Config.h
+e-Paper/EPD_IT8951.c
+e-Paper/EPD_IT8951.h
+Fonts/font8.c
+Fonts/font12.c
+Fonts/font12CN.c
+Fonts/font16.c
+Fonts/font20.c
+Fonts/font24.c
+Fonts/font24CN.c
+Fonts/fonts.h
+GUI/GUI_BMPfile.c
+GUI/GUI_BMPfile.h
+GUI/GUI_Paint.c
+GUI/GUI_Paint.h
 main.c
 )
 
