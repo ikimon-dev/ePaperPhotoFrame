@@ -565,12 +565,12 @@ parameter:  Enhanced driving capability for IT8951, in case the blurred display 
 void Enhance_Driving_Capability(void)
 {
     UWORD RegValue = EPD_IT8951_ReadReg(0x0038);
-    Debug("The reg value before writing is %x\r\n", RegValue);
+    // Debug("The reg value before writing is %x\r\n", RegValue);
 
     EPD_IT8951_WriteReg(0x0038, 0x0602);
 
     RegValue = EPD_IT8951_ReadReg(0x0038);
-    Debug("The reg value after writing is %x\r\n", RegValue);
+    // Debug("The reg value after writing is %x\r\n", RegValue);
 }
 
 /******************************************************************************
@@ -621,7 +621,7 @@ IT8951_Dev_Info EPD_IT8951_Init(UWORD VCOM)
     if (VCOM != EPD_IT8951_GetVCOM())
     {
         EPD_IT8951_SetVCOM(VCOM);
-        Debug("VCOM = -%.02fV\n", (float)EPD_IT8951_GetVCOM() / 1000);
+        // Debug("VCOM = -%.02fV\n", (float)EPD_IT8951_GetVCOM() / 1000);
     }
     return Dev_Info;
 }
