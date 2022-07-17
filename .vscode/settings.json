@@ -4,7 +4,8 @@
         "dev_config.h": "c",
         "fcntl.h": "c",
         "spi.h": "c",
-        "address_mapped.h": "c"
+        "address_mapped.h": "c",
+        "example.h": "c"
     }
 }
 // {

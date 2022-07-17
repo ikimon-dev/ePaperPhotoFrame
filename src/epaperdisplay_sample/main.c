@@ -15,6 +15,7 @@
 #include "./GUI/GUI_BMPfile.h"
 #include "./e-Paper/EPD_IT8951.h"
 #include "./Config/DEV_Config.h"
+#include "example.h"
 
 #define BACK_LIGHT_PIN
 
@@ -48,12 +49,62 @@ int main()
 
     Init_Target_Memory_Addr = Dev_Info.Memory_Addr_L | (Dev_Info.Memory_Addr_H << 16);
 
+    // Enhance_Driving_Capability();
+
+    A2_Mode = 6;
+
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
+
+    // Show 16 grayscale
+    Display_ColorPalette_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // Show some character and pattern
+    Display_CharacterPattern_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr, BitsPerPixel_4);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // Show a bmp file
+    // 1bp use A2 mode by default, before used it, refresh the screen with WHITE
+    Display_BMP_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr, BitsPerPixel_1);
+    Display_BMP_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr, BitsPerPixel_2);
+    Display_BMP_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr, BitsPerPixel_4);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // Show A2 mode refresh effect
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    Dynamic_Refresh_Example(Dev_Info, Init_Target_Memory_Addr);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // Show how to display a gif, not works well on 6inch e-Paper HAT, 9.7inch e-Paper HAT, others work well
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    Dynamic_GIF_Example(Panel_Width, Panel_Height, Init_Target_Memory_Addr);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // Show how to test frame rate, test it individually,which is related to refresh area size and refresh mode
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    Check_FrameRate_Example(800, 600, Init_Target_Memory_Addr, BitsPerPixel_1);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, A2_Mode);
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, GC16_Mode);
+
+    // We recommended refresh the panel to white color before storing in the warehouse.
+    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
+
+    // EPD_IT8951_Standby();
+    EPD_IT8951_Sleep();
+
+    // In case RPI is transmitting image in no hold mode, which requires at most 10s
+    DEV_Delay_ms(5000);
+
+    DEV_Module_Exit();
+
     while (true)
     {
         DEV_Digital_Write(LED_PIN, 1);
 
-        sleep_ms(250);
+        sleep_ms(100);
         DEV_Digital_Write(LED_PIN, 0);
-        sleep_ms(250);
+        sleep_ms(1500);
     }
 }

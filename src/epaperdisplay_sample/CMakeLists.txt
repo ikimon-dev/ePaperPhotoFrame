@@ -23,6 +23,8 @@ GUI/GUI_BMPfile.c
 GUI/GUI_BMPfile.h
 GUI/GUI_Paint.c
 GUI/GUI_Paint.h
+example.h
+example.c
 main.c
 )
 
