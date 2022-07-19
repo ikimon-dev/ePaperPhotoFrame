@@ -23,6 +23,14 @@ GUI/GUI_BMPfile.c
 GUI/GUI_BMPfile.h
 GUI/GUI_Paint.c
 GUI/GUI_Paint.h
+# fatfs/diskio.c
+# fatfs/diskio.h
+fatfs/ff.c
+# fatfs/ff.h
+# fatfs/ffconf.h
+fatfs/ffsystem.c
+fatfs/ffunicode.c
+fatfs/mmc_pico_spi.c
 example.h
 example.c
 main.c
