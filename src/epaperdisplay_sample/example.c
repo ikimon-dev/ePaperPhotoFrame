@@ -257,8 +257,8 @@ parameter:
     Init_Target_Memory_Addr: Memory address of IT8951 target memory address
 ******************************************************************************/
 UBYTE Dynamic_Refresh_Example(IT8951_Dev_Info Dev_Info, UDOUBLE Init_Target_Memory_Addr){
-    UWORD Panel_Width = Dev_Info.Panel_W;
-    UWORD Panel_Height = Dev_Info.Panel_H;
+    UWORD Panel_Width = 100;
+    UWORD Panel_Height = 100;
 
     UWORD Dynamic_Area_Width = 96;
     UWORD Dynamic_Area_Height = 48;

@@ -633,7 +633,7 @@ parameter:
 void EPD_IT8951_Clear_Refresh(IT8951_Dev_Info Dev_Info, UDOUBLE Target_Memory_Addr, UWORD Mode)
 {
 
-    UDOUBLE ImageSize = ((Dev_Info.Panel_W * 4 % 8 == 0) ? (Dev_Info.Panel_W * 4 / 8) : (Dev_Info.Panel_W * 4 / 8 + 1)) * Dev_Info.Panel_H;
+    UDOUBLE ImageSize = (250 * 4 / 8) * 250;
     UBYTE *Frame_Buf = malloc(ImageSize);
     memset(Frame_Buf, 0xFF, ImageSize);
 
@@ -650,8 +650,8 @@ void EPD_IT8951_Clear_Refresh(IT8951_Dev_Info Dev_Info, UDOUBLE Target_Memory_Ad
 
     Area_Img_Info.Area_X = 0;
     Area_Img_Info.Area_Y = 0;
-    Area_Img_Info.Area_W = Dev_Info.Panel_W;
-    Area_Img_Info.Area_H = Dev_Info.Panel_H;
+    Area_Img_Info.Area_W = 250;
+    Area_Img_Info.Area_H = 250;
 
     EPD_IT8951_HostAreaPackedPixelWrite_4bp(&Load_Img_Info, &Area_Img_Info, false);
 

@@ -61,14 +61,14 @@
  * GPIO
  **/
  
-#define PIN_MOSI 3
-#define PIN_CLK 2
-#define EPD_DC_PIN 7
-#define EPD_CS_PIN 5
-#define EPD_RST_PIN 6
-#define EPD_BUSY_PIN 8
+#define PIN_CLK 10
+#define PIN_MOSI 11
+#define PIN_MISO 12
+#define EPD_CS_PIN 13
+#define EPD_RST_PIN 14
+#define EPD_BUSY_PIN 15
 
-#define SPI_PORT spi0
+#define SPI_PORT spi1
 
 /**
  * data

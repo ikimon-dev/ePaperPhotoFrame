@@ -125,8 +125,11 @@ static void DEV_GPIO_Mode(UWORD Pin, UWORD Mode)
 static void DEV_GPIO_Init(void)
 {
 	DEV_GPIO_Mode(EPD_RST_PIN, GPIO_OUT);
+	gpio_pull_down(EPD_RST_PIN);
 	DEV_GPIO_Mode(EPD_CS_PIN, GPIO_OUT);
+	gpio_pull_down(EPD_CS_PIN);
 	DEV_GPIO_Mode(EPD_BUSY_PIN, GPIO_IN);
+	gpio_pull_down(EPD_BUSY_PIN);
 
 	DEV_Digital_Write(EPD_CS_PIN, 1);
 }
@@ -150,13 +153,17 @@ UBYTE DEV_Module_Init(void)
 	// 	Debug("bcm2835 init success !!! \r\n");
 	// }
 
-	// This example will use SPI0 at 1.0MHz.
-	spi_init(SPI_PORT, 1000 * 1000);
+	// This example will use SPI0 at 10MHz.
+	spi_init(SPI_PORT, 10 * 1000 * 1000);
 
 	gpio_set_function(PIN_CLK, GPIO_FUNC_SPI);
+	gpio_pull_down(PIN_CLK);
 	gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+	gpio_pull_down(PIN_MOSI);
+	gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
+	gpio_pull_down(PIN_MISO);
 
-    bi_decl(bi_2pins_with_func(PIN_MOSI, PIN_CLK, GPIO_FUNC_SPI));
+	bi_decl(bi_3pins_with_func(PIN_MOSI, PIN_MISO, PIN_CLK, GPIO_FUNC_SPI));
 
 	// bcm2835_spi_begin();									 // Start spi interface, set spi pin for the reuse function
 	// bcm2835_spi_setBitOrder(BCM2835_SPI_BIT_ORDER_MSBFIRST); // High first transmission
