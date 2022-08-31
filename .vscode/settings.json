@@ -5,7 +5,8 @@
         "fcntl.h": "c",
         "spi.h": "c",
         "address_mapped.h": "c",
-        "example.h": "c"
+        "example.h": "c",
+        "types.h": "c"
     }
 }
 // {
