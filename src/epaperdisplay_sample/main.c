@@ -10,6 +10,7 @@
 #include "./GUI/GUI_BMPfile.h"
 #include "./e-Paper/EPD_IT8951.h"
 #include "./Config/DEV_Config.h"
+#include "./example.h"
 
 #include "fatfs/ff.h"
 #include "fatfs/diskio.h"
@@ -31,12 +32,47 @@ int epd_mode = 0; // 0: no rotate, no mirror
 
 // fatfs向け定義
 
-#define DEF_FATBUFF 1024
+#define DEF_FATBUFF 140400
 char buff_fattest[DEF_FATBUFF];
 
 // LED向け定義
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+
+// BMPファイル向け定義
+
+#pragma pack(2)
+typedef struct BITMAPFILEHEADER
+{
+    uint16_t bfType;      /**< ファイルタイプ、必ず"BM" */
+    uint32_t bfSize;      /**< ファイルサイズ */
+    uint16_t bfReserved1; /**< リザーブ */
+    uint16_t bfReserved2; /**< リサーブ */
+    uint32_t bfOffBits;   /**< 先頭から画像情報までのオフセット */
+} BITMAPFILEHEADER;
+#pragma pack()
+typedef struct BITMAPINFOHEADER
+{
+    uint32_t biSize;         /**< この構造体のサイズ */
+    int32_t biWidth;         /**< 画像の幅 */
+    int32_t biHeight;        /**< 画像の高さ */
+    uint16_t biPlanes;       /**< 画像の枚数、通常1 */
+    uint16_t biBitCount;     /**< 一色のビット数 */
+    uint32_t biCompression;  /**< 圧縮形式 */
+    uint32_t biSizeImage;    /**< 画像領域のサイズ */
+    int32_t biXPelsPerMeter; /**< 画像の横方向解像度情報 */
+    int32_t biYPelsPerMeter; /**< 画像の縦方向解像度情報*/
+    uint32_t biClrUsed;      /**< カラーパレットのうち実際に使っている色の個数 */
+    uint32_t biClrImportant; /**< カラーパレットのうち重要な色の数 */
+} BITMAPINFOHEADER;
+
+BITMAPFILEHEADER bitmap_file_header;
+BITMAPINFOHEADER bitmap_info_header;
+
+// 出力画像向け定義
+
+#define DEF_OUTPUTBUFF 46800
+char buff_output[DEF_OUTPUTBUFF];
 
 int fat_init()
 {
@@ -102,8 +138,104 @@ int main()
 
     EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
 
+    sleep_ms(1000);
+
+    // Display_ColorPalette_Example(10, 250, Init_Target_Memory_Addr);
+
+    // sleep_ms(100);
+
     int ret = fat_init();
-    ret = fat_read(buff_fattest, DEF_FATBUFF);
+
+    while (ret != 0)
+    {
+        ret = fat_init();
+    }
+
+    FRESULT f_ret;
+    FATFS fs;
+    FIL fil;
+    UINT rdsz;
+
+    f_ret = f_mount(&fs, "", 0);
+    if (f_ret != FR_OK)
+    {
+        return -1;
+    }
+
+    f_ret = FR_NOT_READY;
+
+    DIR dir;
+    static FILINFO fno;
+    for (;;)
+    {
+        f_ret = f_opendir(&dir, "image"); /* Open the directory */
+        if (f_ret == FR_OK)
+        {
+            for (;;)
+            {
+                f_ret = f_readdir(&dir, &fno); /* Read a directory item */
+                if (f_ret != FR_OK || fno.fname[0] == 0)
+                {
+                    break; /* Break on error or end of dir */
+                }
+                if (!(fno.fattrib & AM_DIR))
+                { /* It is a file. */
+
+                    char filepath[255] = "image/";
+
+                    strcat(filepath, fno.fname);
+
+                    do
+                    {
+                        f_ret = f_open(&fil, filepath, FA_READ);
+                    } while (f_ret != FR_OK);
+
+                    f_ret = f_read(&fil, &bitmap_file_header, sizeof(BITMAPFILEHEADER), &rdsz);
+                    f_ret = f_read(&fil, &bitmap_info_header, sizeof(BITMAPINFOHEADER), &rdsz);
+
+                    f_ret = f_read(&fil, buff_fattest, (UINT)(bitmap_file_header.bfOffBits - sizeof(BITMAPFILEHEADER) - sizeof(BITMAPINFOHEADER)), &rdsz);
+
+                    for (int i = 0; i < Panel_Height / 25; i++)
+                    {
+
+                        f_ret = f_read(&fil, buff_fattest, 1872 * 25 * 3, &rdsz);
+
+                        if (f_ret != FR_OK)
+                        {
+                            break;
+                        }
+
+                        double red = 0;
+                        double green = 0;
+                        double blue = 0;
+
+                        for (int j = 1; j <= 25; j++)
+                        {
+
+                            for (int k = 0; k < 1872; k++)
+                            { // RGB
+                                red = 0.2126 * buff_fattest[(1872 * (j - 1) + k) * 3 + 2];
+                                green = 0.7152 * buff_fattest[(1872 * (j - 1) + k) * 3 + 1];
+                                blue = 0.0722 * buff_fattest[(1872 * (j - 1) + k) * 3];
+                                buff_output[1872 * (25 - j) + k] = (red + green + blue);
+                            }
+                        }
+
+                        // Paint_NewImage(buff_output, (UINT)Panel_Width, 25, ROTATE_0, WHITE);
+
+                        EPD_IT8951_8bp_Refresh(buff_output, 0, (Panel_Height / 25 - 1 - i) * 25, Panel_Width, 25, true, Init_Target_Memory_Addr);
+                    }
+
+                    f_close(&fil);
+
+                    sleep_ms(10000000);
+
+                    EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
+                }
+            }
+            f_closedir(&dir);
+        }
+    }
 
     return 0;
 }
