@@ -15,6 +15,10 @@
 #include "fatfs/ff.h"
 #include "fatfs/diskio.h"
 
+// #include "jpeg/jpeglib.h"
+// #include "jpeg/jconfig.h"
+// #include "jpeg/jmorecfg.h"
+
 // epaper向け定義
 
 UWORD VCOM;

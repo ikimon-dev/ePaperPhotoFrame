@@ -6,7 +6,10 @@
         "spi.h": "c",
         "address_mapped.h": "c",
         "example.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "jpeglib.h": "c",
+        "jconfig.h": "c",
+        "jmorecfg.h": "c"
     }
 }
 // {
