@@ -26,8 +26,8 @@ add_executable(${PROJECT_NAME}
     # fatfs/diskio.h
     fatfs/ff.c
 
-    # fatfs/ff.h
-    # fatfs/ffconf.h
+    fatfs/ff.h
+    fatfs/ffconf.h
     fatfs/ffsystem.c
     fatfs/ffunicode.c
     fatfs/mmc_pico_spi.c

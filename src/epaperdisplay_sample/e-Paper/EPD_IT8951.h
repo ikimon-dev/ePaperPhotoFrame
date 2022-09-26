@@ -151,36 +151,36 @@ IT8951 Registers defines
 #define LISAR (MCSR_BASE_ADDR + 0x0008)
 
 
-/*
-void EPD_IT8951_SystemRun();
-void EPD_IT8951_Standby();
-void EPD_IT8951_Sleep();
 
-UWORD EPD_IT8951_ReadReg(UWORD Reg_Address);
-void EPD_IT8951_WriteReg(UWORD Reg_Address,UWORD Reg_Value);
-UWORD EPD_IT8951_GetVCOM(void);
-void EPD_IT8951_SetVCOM(UWORD VCOM);
+static void EPD_IT8951_SystemRun();
+static void EPD_IT8951_Standby();
+static void EPD_IT8951_Sleep();
 
-void EPD_IT8951_LoadImgStart( IT8951_Load_Img_Info* Load_Img_Info );
-void EPD_IT8951_LoadImgAreaStart( IT8951_Load_Img_Info* Load_Img_Info, IT8951_Area_Img_Info* Area_Img_Info );
-void EPD_IT8951_LoadImgEnd(void);
+static UWORD EPD_IT8951_ReadReg(UWORD Reg_Address);
+static void EPD_IT8951_WriteReg(UWORD Reg_Address,UWORD Reg_Value);
+static UWORD EPD_IT8951_GetVCOM(void);
+static void EPD_IT8951_SetVCOM(UWORD VCOM);
 
-void EPD_IT8951_GetSystemInfo(void* Buf);
-void EPD_IT8951_SetTargetMemoryAddr(UDOUBLE Target_Memory_Addr);
-void EPD_IT8951_WaitForDisplayReady(void);
+static void EPD_IT8951_LoadImgStart( IT8951_Load_Img_Info* Load_Img_Info );
+static void EPD_IT8951_LoadImgAreaStart( IT8951_Load_Img_Info* Load_Img_Info, IT8951_Area_Img_Info* Area_Img_Info );
+static void EPD_IT8951_LoadImgEnd(void);
+
+static void EPD_IT8951_GetSystemInfo(void* Buf);
+static void EPD_IT8951_SetTargetMemoryAddr(UDOUBLE Target_Memory_Addr);
+static void EPD_IT8951_WaitForDisplayReady(void);
 
 
-void EPD_IT8951_HostAreaPackedPixelWrite_8bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info);
+static void EPD_IT8951_HostAreaPackedPixelWrite_8bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info);
 
-void EPD_IT8951_HostAreaPackedPixelWrite_1bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info, bool Packed_Write);
+static void EPD_IT8951_HostAreaPackedPixelWrite_1bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info, bool Packed_Write);
 
-void EPD_IT8951_HostAreaPackedPixelWrite_2bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info, bool Packed_Write);
+static void EPD_IT8951_HostAreaPackedPixelWrite_2bp(IT8951_Load_Img_Info*Load_Img_Info,IT8951_Area_Img_Info*Area_Img_Info, bool Packed_Write);
 
-void EPD_IT8951_Display_Area(UWORD X,UWORD Y,UWORD W,UWORD H,UWORD Mode);
-void EPD_IT8951_Display_AreaBuf(UWORD X,UWORD Y,UWORD W,UWORD H,UWORD Mode, UDOUBLE Target_Memory_Addr);
+static void EPD_IT8951_Display_Area(UWORD X,UWORD Y,UWORD W,UWORD H,UWORD Mode);
+static void EPD_IT8951_Display_AreaBuf(UWORD X,UWORD Y,UWORD W,UWORD H,UWORD Mode, UDOUBLE Target_Memory_Addr);
 
-void EPD_IT8951_Display_1bp(UWORD X, UWORD Y, UWORD W, UWORD H, UWORD Mode,UDOUBLE Target_Memory_Addr, UBYTE Front_Gray_Val, UBYTE Back_Gray_Val);
-*/
+static void EPD_IT8951_Display_1bp(UWORD X, UWORD Y, UWORD W, UWORD H, UWORD Mode,UDOUBLE Target_Memory_Addr, UBYTE Front_Gray_Val, UBYTE Back_Gray_Val);
+
 
 void Enhance_Driving_Capability(void);
 
