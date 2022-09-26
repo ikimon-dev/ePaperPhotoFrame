@@ -9,7 +9,9 @@
         "types.h": "c",
         "jpeglib.h": "c",
         "jconfig.h": "c",
-        "jmorecfg.h": "c"
+        "jmorecfg.h": "c",
+        "time.h": "c",
+        "epd_it8951.h": "c"
     }
 }
 // {
