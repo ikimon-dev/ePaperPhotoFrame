@@ -4,11 +4,14 @@ cmake_minimum_required(VERSION 3.10)
 set(PROJECT_NAME epaperdisplay_sample)
 project(${PROJECT_NAME} VERSION 1.0)
 
+include_directories(${CMAKE_SOURCE_DIR}/src/epaperdisplay_sample)
+
 add_executable(${PROJECT_NAME}
-    Config/DEV_Config.c
+
     Config/DEV_Config.h
-    e-Paper/EPD_IT8951.c
+    Config/DEV_Config.c
     e-Paper/EPD_IT8951.h
+    e-Paper/EPD_IT8951.c
     Fonts/font8.c
     Fonts/font12.c
     Fonts/font12CN.c
