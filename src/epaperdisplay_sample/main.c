@@ -4,19 +4,17 @@
 #include <string.h>
 
 //
+#include "e-Paper/EPD_IT8951.h"
+//
+// #include "Config/DEV_Config.h"
+//
 #include "pico/stdlib.h"
 //
-#include "./e-Paper/EPD_IT8951.h"
+// #include "GUI/GUI_Paint.h"
 //
-#include "./GUI/GUI_Paint.h"
+// #include "GUI/GUI_BMPfile.h"
 //
-#include "./GUI/GUI_BMPfile.h"
-//
-#include "./e-Paper/EPD_IT8951.h"
-//
-#include "./Config/DEV_Config.h"
-//
-#include "./example.h"
+// #include "example.h"
 //
 #include "fatfs/ff.h"
 //
@@ -255,19 +253,21 @@ int main() {
               }
             }
 
-            EPD_IT8951_Display_Area(Area_Img_Info.Area_X, Area_Img_Info.Area_Y,
-                                    Area_Img_Info.Area_W, Area_Img_Info.Area_H,
-                                    GC16_Mode);
+            sleep_ms(1);
           }
+
+          EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr,
+                                   INIT_Mode);
+
+          sleep_ms(1000);
+
+          EPD_IT8951_Display_Area(0, 0, 1872, 1404, GC16_Mode);
 
           EPD_IT8951_LoadImgEnd();
 
           f_close(&fil);
 
           sleep_ms(10000);
-
-          // EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr,
-          // INIT_Mode);
         }
       }
       f_closedir(&dir);
