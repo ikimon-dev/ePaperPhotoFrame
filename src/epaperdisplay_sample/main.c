@@ -139,7 +139,10 @@ int main() {
 
   A2_Mode = 6;
 
-  EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
+  // EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
+  
+  EPD_IT8951_Display_Area(0, 0, Dev_Info.Panel_W, Dev_Info.Panel_H, INIT_Mode);
+
 
   sleep_ms(1000);
 
@@ -195,7 +198,7 @@ int main() {
               &rdsz);
 
           for (int i = 0; i < Panel_Height / 25; i++) {
-            f_ret = f_read(&fil, buff_fattest, 1872 * 25 * 3, &rdsz);
+            f_ret = f_read(&fil, buff_fattest, Panel_Width * 25 * 3, &rdsz);
 
             if (f_ret != FR_OK) {
               break;
@@ -206,11 +209,13 @@ int main() {
             double blue = 0;
 
             for (int j = 1; j <= 25; j++) {
-              for (int k = 0; k < 1872; k++) {  // RGB
-                red = 0.2126 * buff_fattest[(1872 * (j - 1) + k) * 3 + 2];
-                green = 0.7152 * buff_fattest[(1872 * (j - 1) + k) * 3 + 1];
-                blue = 0.0722 * buff_fattest[(1872 * (j - 1) + k) * 3];
-                buff_output[1872 * (25 - j) + k] = (red + green + blue);
+              for (int k = 0; k < Panel_Width; k++) {  // RGB
+                red =
+                    0.2126 * buff_fattest[(Panel_Width * (j - 1) + k) * 3 + 2];
+                green =
+                    0.7152 * buff_fattest[(Panel_Width * (j - 1) + k) * 3 + 1];
+                blue = 0.0722 * buff_fattest[(Panel_Width * (j - 1) + k) * 3];
+                buff_output[Panel_Width * (25 - j) + k] = (red + green + blue);
               }
             }
 
@@ -256,12 +261,15 @@ int main() {
             sleep_ms(1);
           }
 
-          EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr,
-                                   INIT_Mode);
+          EPD_IT8951_Display_Area(0, 0, Dev_Info.Panel_W, Dev_Info.Panel_H,
+                                  INIT_Mode);
 
           sleep_ms(1000);
 
-          EPD_IT8951_Display_Area(0, 0, 1872, 1404, GC16_Mode);
+          EPD_IT8951_Display_Area(0, 0, Dev_Info.Panel_W, Dev_Info.Panel_H,
+                                  GC16_Mode);
+
+          sleep_ms(1000);
 
           EPD_IT8951_LoadImgEnd();
 

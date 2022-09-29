@@ -301,13 +301,13 @@ function :	EPD_IT8951_Get_System_Info
 parameter:
 ******************************************************************************/
  void EPD_IT8951_GetSystemInfo(void *Buf) {
-  IT8951_Dev_Info *Dev_Info;
+  // IT8951_Dev_Info *Dev_Info;
 
   EPD_IT8951_WriteCommand(USDEF_I80_CMD_GET_DEV_INFO);
 
   EPD_IT8951_ReadMultiData((UWORD *)Buf, sizeof(IT8951_Dev_Info) / 2);
 
-  Dev_Info = (IT8951_Dev_Info *)Buf;
+  // Dev_Info = (IT8951_Dev_Info *)Buf;
   // Debug("Panel(W,H) = (%d,%d)\r\n",Dev_Info->Panel_W, Dev_Info->Panel_H );
   // Debug("Memory Address = %X\r\n",Dev_Info->Memory_Addr_L |
   // (Dev_Info->Memory_Addr_H << 16)); Debug("FW Version = %s\r\n",
@@ -588,7 +588,7 @@ parameter:
 ******************************************************************************/
 void EPD_IT8951_Clear_Refresh(IT8951_Dev_Info Dev_Info,
                               UDOUBLE Target_Memory_Addr, UWORD Mode) {
-  UDOUBLE ImageSize = (250 * 4 / 8) * 250;
+  UDOUBLE ImageSize = (Dev_Info.Panel_H * 4 / 8) * Dev_Info.Panel_W;
   UBYTE *Frame_Buf = malloc(ImageSize);
   memset(Frame_Buf, 0xFF, ImageSize);
 
@@ -605,8 +605,8 @@ void EPD_IT8951_Clear_Refresh(IT8951_Dev_Info Dev_Info,
 
   Area_Img_Info.Area_X = 0;
   Area_Img_Info.Area_Y = 0;
-  Area_Img_Info.Area_W = 250;
-  Area_Img_Info.Area_H = 250;
+  Area_Img_Info.Area_W = Dev_Info.Panel_W;
+  Area_Img_Info.Area_H = Dev_Info.Panel_H;
 
   EPD_IT8951_HostAreaPackedPixelWrite_4bp(&Load_Img_Info, &Area_Img_Info,
                                           false);
