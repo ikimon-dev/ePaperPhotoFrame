@@ -19,6 +19,8 @@
 #include "fatfs/ff.h"
 //
 #include "fatfs/diskio.h"
+//
+#include "jpeg/tjpgd.h"
 
 // #include "jpeg/jpeglib.h"
 // #include "jpeg/jconfig.h"
@@ -40,6 +42,9 @@ int epd_mode = 0;  // 0: no rotate, no mirror
                    // 3: no rotate, no mirror, isColor, for 6inch color
 
 // fatfs向け定義
+
+FATFS Fs;
+FIL Fil;
 
 #define DEF_FATBUFF 140400
 char buff_fattest[DEF_FATBUFF];
@@ -93,7 +98,7 @@ int fat_init() {
   return result;
 }
 
-int fat_read(char *buff, int bsize) {
+int fat_read(char* buff, int bsize) {
   FRESULT ret;
   FATFS fs;
   FIL fil;
@@ -118,6 +123,104 @@ int fat_read(char *buff, int bsize) {
   return (int)rdsz;
 }
 
+/*-----------------------------------*/
+/* JPEG file loader                  */
+/*-----------------------------------*/
+
+/* User defined call-back function to input JPEG data */
+static unsigned int
+tjd_input(                /* Returns number of bytes read (zero on error) */
+          JDEC* jd,       /* Decompression object */
+          uint8_t* buff,  /* Pointer to the read buffer (null to remove data) */
+          unsigned int nd /* Number of bytes to read/skip from input stream */
+) {
+  UINT rb;
+  FRESULT fresult;
+  jd = jd; /* Suppress warning (device identifier is not needed in this
+              appication) */
+
+  if (buff) { /* Read nd bytes from the input strem */
+    fresult = f_read(&Fil, buff, nd, &rb);
+    return rb; /* Returns number of bytes could be read */
+
+  } else { /* Skip nd bytes on the input stream */
+    char buffer[1024];
+    fresult = f_read(&Fil, buffer, nd, &rb);
+    if (fresult == FR_OK) {
+      return rb;
+    }
+  }
+  return 0;
+}
+
+/* User defined call-back function to output RGB bitmap */
+static int tjd_output(JDEC* jd, /* Decompression object of current session */
+                      void* bitmap, /* Bitmap data to be output */
+                      JRECT* rect   /* Rectangular region to output */
+) {
+  jd = jd; /* Suppress warning (device identifier is not needed in this
+              appication) */
+
+  /* Check user interrupt at left end */
+  if (!rect->left) return 0; /* Abort to decompression */
+
+  /* Put the rectangular into the display device */
+
+  EPD_IT8951_8bp_Refresh(bitmap, rect->left, rect->top,
+                         rect->right - rect->left, rect->top - rect->bottom,
+                         true, Init_Target_Memory_Addr);
+
+  // rect->left, rect->right, rect->top, rect->bottom,
+  // (uint16_t*)bitmap);
+
+  return 1; /* Continue to decompression */
+}
+
+void load_jpg(
+    const char* fn, /* File to open */
+    void* work,     /* Pointer to the working buffer (must be 4-byte aligned) */
+    uint16_t sz_work /* Size of the working buffer (must be power of 2) */
+) {
+  JDEC jd; /* Decompression object (70 bytes) */
+  JRESULT rc;
+  uint8_t scale;
+
+  FRESULT f_ret;
+  f_ret = FR_NOT_READY;
+
+  f_ret = f_open(&Fil, fn, FA_READ);
+
+  if (f_ret != FR_OK) {
+    return;
+  }
+
+  // disp_fill(0, DISP_XS, 0, DISP_YS, 0); /* Clear screen */
+  // disp_font_color(C_WHITE);
+
+  /* Prepare to decompress the file */
+  rc = jd_prepare(&jd, tjd_input, work, sz_work, 0);
+  if (rc == JDR_OK) {
+    /* Determine scale factor */
+    // for (scale = 0; scale < 3; scale++) {
+    //   if ((jd.width >> scale) <= DISP_XS && (jd.height >> scale) <= DISP_YS)
+    //     break;
+    // }
+
+    /* Display size information at bottom of screen */
+    // disp_locate(0, TS_HEIGHT - 1);
+    // xfprintf(disp_putc, PSTR("%ux%u 1/%u"), jd.width, jd.height, 1 << scale);
+
+    /* Start to decompress the JPEG file */
+    rc = jd_decomp(&jd, tjd_output, scale); /* Start to decompress */
+
+  }  // else {
+  /* Display error code */
+  // disp_locate(0, 0);
+  // xfprintf(disp_putc, PSTR("Error: %d"), rc);
+  // }
+  // uart_getc();
+}
+
 int main() {
   gpio_init(LED_PIN);
   gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -140,9 +243,8 @@ int main() {
   A2_Mode = 6;
 
   // EPD_IT8951_Clear_Refresh(Dev_Info, Init_Target_Memory_Addr, INIT_Mode);
-  
-  EPD_IT8951_Display_Area(0, 0, Dev_Info.Panel_W, Dev_Info.Panel_H, INIT_Mode);
 
+  EPD_IT8951_Display_Area(0, 0, Dev_Info.Panel_W, Dev_Info.Panel_H, INIT_Mode);
 
   sleep_ms(1000);
 
@@ -155,16 +257,20 @@ int main() {
   }
 
   FRESULT f_ret;
-  FATFS fs;
-  FIL fil;
   UINT rdsz;
 
-  f_ret = f_mount(&fs, "", 0);
+  f_ret = f_mount(&Fs, "", 0);
   if (f_ret != FR_OK) {
     return -1;
   }
 
   f_ret = FR_NOT_READY;
+
+  char Work[3100]; /* Minimum working buffer for the most JPEG picture */
+
+  char filepathjpeg[255] = "image/test0.jpg";
+
+  load_jpg(filepathjpeg, Work, 3100);
 
   DIR dir;
   static FILINFO fno;
@@ -183,22 +289,22 @@ int main() {
           strcat(filepath, fno.fname);
 
           do {
-            f_ret = f_open(&fil, filepath, FA_READ);
+            f_ret = f_open(&Fil, filepath, FA_READ);
           } while (f_ret != FR_OK);
 
-          f_ret = f_read(&fil, &bitmap_file_header, sizeof(BITMAPFILEHEADER),
+          f_ret = f_read(&Fil, &bitmap_file_header, sizeof(BITMAPFILEHEADER),
                          &rdsz);
-          f_ret = f_read(&fil, &bitmap_info_header, sizeof(BITMAPINFOHEADER),
+          f_ret = f_read(&Fil, &bitmap_info_header, sizeof(BITMAPINFOHEADER),
                          &rdsz);
 
           f_ret = f_read(
-              &fil, buff_fattest,
+              &Fil, buff_fattest,
               (UINT)(bitmap_file_header.bfOffBits - sizeof(BITMAPFILEHEADER) -
                      sizeof(BITMAPINFOHEADER)),
               &rdsz);
 
           for (int i = 0; i < Panel_Height / 25; i++) {
-            f_ret = f_read(&fil, buff_fattest, Panel_Width * 25 * 3, &rdsz);
+            f_ret = f_read(&Fil, buff_fattest, Panel_Width * 25 * 3, &rdsz);
 
             if (f_ret != FR_OK) {
               break;
@@ -242,7 +348,7 @@ int main() {
             Area_Img_Info.Area_W = Panel_Width;
             Area_Img_Info.Area_H = 25;
 
-            UWORD *Source_Buffer = (UWORD *)Load_Img_Info.Source_Buffer_Addr;
+            UWORD* Source_Buffer = (UWORD*)Load_Img_Info.Source_Buffer_Addr;
             EPD_IT8951_SetTargetMemoryAddr(Load_Img_Info.Target_Memory_Addr);
             EPD_IT8951_LoadImgAreaStart(&Load_Img_Info, &Area_Img_Info);
 
@@ -273,7 +379,7 @@ int main() {
 
           EPD_IT8951_LoadImgEnd();
 
-          f_close(&fil);
+          f_close(&Fil);
 
           sleep_ms(10000);
         }

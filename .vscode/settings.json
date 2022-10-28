@@ -11,7 +11,8 @@
         "jconfig.h": "c",
         "jmorecfg.h": "c",
         "time.h": "c",
-        "epd_it8951.h": "c"
+        "epd_it8951.h": "c",
+        "tjpgd.h": "c"
     }
 }
 // {
